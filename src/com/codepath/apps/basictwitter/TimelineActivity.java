@@ -12,7 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
+import android.widget.ListView;
 
 import com.codepath.apps.basictwitter.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -25,7 +25,8 @@ public class TimelineActivity extends Activity {
 	private TwitterClient client;
 	private ArrayList<Tweet> tweets;
 	private ArrayAdapter<Tweet> aTweets;
-	private PullToRefreshListView lvTweets;
+	//private PullToRefreshListView lvTweets;
+	private ListView lvTweets;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,8 @@ public class TimelineActivity extends Activity {
 		setContentView(R.layout.activity_timeline);
 		client = TwitterApplication.getRestClient();
 		populateTimeline ("");
-		lvTweets = (PullToRefreshListView)findViewById(R.id.lvTweets);
+		//lvTweets = (PullToRefreshListView)findViewById(R.id.lvTweets);
+		lvTweets = (ListView)findViewById(R.id.lvTweets);
 		tweets = new ArrayList<Tweet> ();
 		aTweets = new TweetArrayAdapter(this, tweets);
 		lvTweets.setAdapter(aTweets);
@@ -49,7 +51,7 @@ public class TimelineActivity extends Activity {
 			
 		}
 		);
-		lvTweets.setOnRefreshListener(new OnRefreshListener ()
+/*		lvTweets.setOnRefreshListener(new OnRefreshListener ()
 		{
 
 			@Override
@@ -58,6 +60,7 @@ public class TimelineActivity extends Activity {
 			}
 			
 		});
+		*/
 	}
 
 	
@@ -83,7 +86,7 @@ public class TimelineActivity extends Activity {
 			{
 				//Log.d("debug", json.toString());
 				aTweets.addAll(Tweet.fromJsonArray(json));
-				 lvTweets.onRefreshComplete();
+				 //lvTweets.onRefreshComplete();
 			};
 			
 			@Override
