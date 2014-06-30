@@ -1,56 +1,34 @@
 package com.codepath.apps.basictwitter;
 
-import java.util.ArrayList;
-
-import org.json.JSONObject;
-
-import android.app.Activity;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
-import com.codepath.apps.basictwitter.models.Tweet;
-import com.loopj.android.http.JsonHttpResponseHandler;
+import com.codepath.apps.basictwitter.fragments.HomeTimelineFragment;
+import com.codepath.apps.basictwitter.fragments.MentionsTimelineFragment;
+import com.codepath.apps.basictwitter.listeners.FragmentTabListener;
 
-import eu.erikw.PullToRefreshListView;
-import eu.erikw.PullToRefreshListView.OnRefreshListener;
+public class TimelineActivity extends FragmentActivity {
 
-public class TimelineActivity extends Activity {
 
-	private TwitterClient client;
-	private ArrayList<Tweet> tweets;
-	private ArrayAdapter<Tweet> aTweets;
-	//private PullToRefreshListView lvTweets;
-	private ListView lvTweets;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
-		client = TwitterApplication.getRestClient();
-		populateTimeline ("");
-		//lvTweets = (PullToRefreshListView)findViewById(R.id.lvTweets);
-		lvTweets = (ListView)findViewById(R.id.lvTweets);
-		tweets = new ArrayList<Tweet> ();
-		aTweets = new TweetArrayAdapter(this, tweets);
-		lvTweets.setAdapter(aTweets);
-		
-		lvTweets.setOnScrollListener(new EndlessScrollListener ()
-		{
 
-			@Override
-			public void onLoadMore(int page, int totalItemsCount) {
-				 customLoadMoreDataFromApi(page, totalItemsCount); 
-				
-			}
-			
-		}
-		);
+		//lvTweets = (PullToRefreshListView)findViewById(R.id.lvTweets);
+		setupTabs();
+		
+	
+		
+
 /*		lvTweets.setOnRefreshListener(new OnRefreshListener ()
 		{
 
@@ -61,43 +39,38 @@ public class TimelineActivity extends Activity {
 			
 		});
 		*/
+		
+		getActionBar().setTitle("Twitter Timeline");
 	}
 
 	
-	// Append more data into the adapter
-    public void customLoadMoreDataFromApi(int page, int offset) {
-      // This method probably sends out a network request and appends new data items to your adapter. 
-      // Use the offset value and add it as a parameter to your API request to retrieve paginated data.
-      // Deserialize API response and then construct new objects to append to the adapter
-    	Log.d("debug", "page =" + page + " offset="+offset);
-    	Log.d ("debug", "number of tweets in list = " + aTweets.getCount ());
-    	if (aTweets.getCount () == offset)
-    	{
-    	   	String max_id = aTweets.getItem(offset-1).getId();
-        	populateTimeline (max_id);	
-    	}
-    }
-    
-	public void populateTimeline (String max_id) {
-		client.getHomeTimeline(new JsonHttpResponseHandler ()
-		{
-			@Override
-			public void onSuccess(org.json.JSONArray json) 
-			{
-				//Log.d("debug", json.toString());
-				aTweets.addAll(Tweet.fromJsonArray(json));
-				 //lvTweets.onRefreshComplete();
-			};
-			
-			@Override
-			public void onFailure(Throwable arg0, String arg1) 
-			{
-				Log.d("debug", arg0.toString());
-				Log.d("debug", arg1);
-			};
-		}
-		, max_id);
+	private void setupTabs() {
+		ActionBar actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setDisplayShowTitleEnabled(true);
+
+		Tab tab1 = actionBar
+		    .newTab()
+		    .setText("Home")
+		    .setIcon(R.drawable.ic_home)
+		    .setTag("HomeTimelineFragment")
+		    .setTabListener(new FragmentTabListener<HomeTimelineFragment>(R.id.flContainer, this,
+                        "home", HomeTimelineFragment.class));
+
+		actionBar.addTab(tab1);
+		actionBar.selectTab(tab1);
+
+		Tab tab2 = actionBar
+		    .newTab()
+		    .setText("Mentions")
+		    .setIcon(R.drawable.ic_mention)
+		    .setTag("MentionsTimelineFragment")
+		    .setTabListener(new FragmentTabListener<MentionsTimelineFragment>(R.id.flContainer, this,
+                        "mentions", MentionsTimelineFragment.class));
+		actionBar.addTab(tab2);
 	}
+
+
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -115,6 +88,13 @@ public class TimelineActivity extends Activity {
 		 startActivityForResult(i, 50);
 	 }
 	
+	public void onProfile (MenuItem mi)
+	{
+		Intent i = new Intent (this, ProfileActivity.class);
+		
+		startActivity (i);
+	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		 if (resultCode == RESULT_OK)
@@ -126,12 +106,13 @@ public class TimelineActivity extends Activity {
 				 //Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 				 //searchQuery(0, true);
 					msg = Uri.encode(msg);
+					/*
 					client.postTweet(new JsonHttpResponseHandler ()
 					{
 						@Override
 						public void onSuccess(int arg0, JSONObject arg1) {
 							Tweet tweet = Tweet.fromJson(arg1);
-							aTweets.insert(tweet, 0);
+							//aTweets.insert(tweet, 0);
 						}
 						
 						@Override
@@ -141,6 +122,7 @@ public class TimelineActivity extends Activity {
 							Log.d("debug", arg1);
 						};
 					}, msg);
+					*/
 			 }
 		 }
 	}

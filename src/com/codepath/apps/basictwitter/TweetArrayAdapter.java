@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Locale;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ParseException;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -59,6 +61,17 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		}
 		
 		ImageView ivProfileImage = (ImageView)v.findViewById(R.id.ivProfileImage);
+		ivProfileImage.setTag(tweet.getUser().getScreenName());
+		ivProfileImage.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View imageView) {
+				
+				Intent i = new Intent (getContext(), ProfileActivity.class); 
+				i.putExtra("screenName", (String)imageView.getTag());
+				imageView.getContext().startActivity (i);
+			}
+		});
 		TextView tvUserName = (TextView)v.findViewById(R.id.tvUserName);
 		TextView tvBody = (TextView)v.findViewById(R.id.tvBody);
 		TextView tvRelativeTime = (TextView)v.findViewById(R.id.tvRelativeTime);

@@ -7,6 +7,7 @@ import android.content.Context;
 
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 /*
@@ -46,6 +47,37 @@ public class TwitterClient extends OAuthBaseClient {
     	client.get(apiUrl, params, handler);
     }
     
+    public void getProfile (AsyncHttpResponseHandler handler, String screenName) {
+    	String apiUrl = null;
+    	RequestParams params = null;
+    	if (screenName == null)
+    	{
+    		apiUrl = getApiUrl ("account/verify_credentials.json");
+    	}
+    	else
+    	{
+    		apiUrl = getApiUrl ("users/show.json");
+    		params = new RequestParams();
+    		params.put("screen_name", screenName);
+    	}
+ 
+ 
+    	client.get(apiUrl, params, handler);
+    }
+    
+    public void getUserTimeline (AsyncHttpResponseHandler handler, String uid) {
+       	String apiUrl = getApiUrl ("statuses/user_timeline.json");
+       	RequestParams params = null;
+        
+       	if (uid != null)
+       	{
+       		params = new RequestParams ();
+       		params.put("screen_name", uid.toString());
+       	}
+  
+    	client.get(apiUrl, params, handler);
+    }
+    
     public void postTweet(AsyncHttpResponseHandler handler, String msg)
     {
     	String apiUrl = getApiUrl ("statuses/update.json");
@@ -53,6 +85,22 @@ public class TwitterClient extends OAuthBaseClient {
     	params.put ("status", msg);
     	client.post(apiUrl, params, handler);
     }
+
+	public void getMentionsTimeline(
+			AsyncHttpResponseHandler handler, String max_id) {
+    	String apiUrl = getApiUrl ("statuses/mentions_timeline.json");
+    	RequestParams params = new RequestParams ();
+    	
+    	if (max_id != "")
+    	{
+    		params.put("max_id", max_id);
+    	}
+    	
+    	params.put("since", "1");
+    	//params.put("count", "25");
+    	client.get(apiUrl, params, handler);
+		
+	}
     
     // CHANGE THIS
     // DEFINE METHODS for different API endpoints here
