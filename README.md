@@ -7,5 +7,5 @@ All required user stories:
 - infinite scroll
 - compose tweet and shows up in list
 
-![Video walkthrough](twitterclient.gif)
+![Video walkthrough](twitterclient_v2.gif)
 
